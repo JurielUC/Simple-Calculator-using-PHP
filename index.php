@@ -27,155 +27,99 @@
         align-items: center;
     }
 
-    section {
-        box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
-        width: 400px;
-        height: 400px;
-        border-radius: 20px;
-    }
-
-    .header {
-        width: 100%;
-        height: 30px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin-top: 60px;
-    }
-
-    h3 {
-        background-color: #808080;
-        border-radius: 4px;
-        width: 70%;
-        padding: 10px;
+    form {
+        width: 500px;
+        margin: 50px auto;
         text-align: center;
-        box-shadow: rgba(0, 0, 0, 0.25) 0px 0.0625em 0.0625em, rgba(0, 0, 0, 0.25) 0px 0.125em 0.5em, rgba(255, 255, 255, 0.1) 0px 0px 0px 1px inset;
+        padding: 20px;
+        border: 1px solid #ccc;
+        box-shadow: 2px 2px 5px #ccc;
     }
 
-    .numbers {
+    input[type="text"], select {
         width: 100%;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        margin-top: 20px;
-    }
-
-    .numbers input[type=text] {
-        width: 70%;
-        margin-top: 10px;
         padding: 10px;
-        border: 1px solid #808080;
+        margin: 10px 0;
+        box-sizing: border-box;
+        border: 1px solid #ccc;
         border-radius: 4px;
-        background-color: #f1f1f1;
-        font-size: 1rem;
     }
 
-    select, input[type=text]:focus {
-        outline: none;
-    }
-
-    .op-submit {
+    input[type="submit"] {
         width: 100%;
-        margin-top: 10px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-
-    .op-submit select, input[type=submit] {
         padding: 10px;
-        border: 1px solid #808080;
+        margin: 10px 0;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
         border-radius: 4px;
-        background-color: #f1f1f1;
-        font-size: 1rem;
-    }
-
-    input[type=submit]:hover {
-        background-color: #000000;
-        color: #ffffff;
-    }
-
-    select {
-        width: 50%;
-        margin-right: 5%;
-    }
-
-    input[type=submit] {
-        width: 20%;
         cursor: pointer;
     }
 
-    .result {
-        width: 100%;
-        margin-top: 10px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
+    input[type="submit"]:hover {
+        background-color: #3e8e41;
     }
 
-    .result input[type=text] {
-        width: 70%;
-        padding: 10px;
-        border: 1px solid #808080;
-        border-radius: 4px;
-        background-color: #f1f1f1;
-        font-size: 1rem;
+    input[type="text"] {
+        background-color: #f2f2f2;
     }
-
-
 </style>
 <body>
     <?php 
-        if(isset($_POST['count'])) {
-            $num1=$_POST['num1'];
-            $num2=$_POST['num2'];
-            $operator=$_POST['operator'];
-            switch($operator) {
-                case 'Addition':
-                    $result = $num1 + $num2;
-                    break;
-                case 'Subtraction':
-                    $result = $num1 - $num2;
-                    break;
-                case 'Multiplication':
-                    $result = $num1 * $num2;
-                    break;
-                case 'Division':
-                    $result = $num1 / $num2;
-                    break;
+        if(isset($_POST['count'])) { 
+            $num1 = $_POST['num1'];
+            $num2 = $_POST['num2'];
+            $operator = $_POST['operator'];
+        
+            // validate user inputs
+            if (!is_numeric($num1) || !is_numeric($num2)) {
+                $error = "Both inputs must be numeric values.";
+            } else {
+                switch($operator) {
+                    case 'Addition':
+                        $result = $num1 + $num2;
+                        break;
+                    case 'Subtraction':
+                        $result = $num1 - $num2;
+                        break;
+                    case 'Multiplication':
+                        $result = $num1 * $num2;
+                        break;
+                    case 'Division':
+                        // avoid division by zero
+                        if ($num2 == 0) {
+                            $error = "Cannot divide by zero.";
+                        } else {
+                            $result = $num1 / $num2;
+                        }
+                        break;
+                }
             }
         }
     ?>
     <main>
         <section>
-            <div class="header">
-                <h3>Simple PHP Calculator</h3>
-            </div>
-            <form action="index.php" method="post">
-                <div class="numbers">
-                    <input type="text" name="num1" autocomplete="off" placeholder="First Number">
-                    <input type="text" name="num2" autocomplete="off" placeholder="Second Number">
-                </div>
-                <div class="op-submit">
-                    <select name="operator" id="">
-                        <option value="Addition">+</option>
-                        <option value="Subtraction">-</option>
-                        <option value="Multiplication">x</option>
-                        <option value="Division">/</option>
-                    </select>
-                    <input type="submit" value="Equal" name="count">
-                </div>
+            <form method="post">
+                <input type="text" name="num1" placeholder="Enter first number">
+                <br><br>
+                <input type="text" name="num2" placeholder="Enter second number">
+                <br><br>
+                <select name="operator">
+                    <option value="Addition">Addition</option>
+                    <option value="Subtraction">Subtraction</option>
+                    <option value="Multiplication">Multiplication</option>
+                    <option value="Division">Division</option>
+                </select>
+                <br><br>
+                <input type="submit" name="count" value="Calculate">
+                <br><br>
+                <?php if (isset($result)) { ?>
+                    <input type="text" value="<?php echo $result; ?>" readonly>
+                <?php } ?>
+                <?php if (isset($error)) { ?>
+                    <p style="color:red;"><?php echo $error; ?></p>
+                <?php } ?>
             </form>
-            <?php 
-                if(isset($_POST['count'])) {
-            ?>
-            <div class="result">
-                <input type="text" value="<?php echo $result ?>" readonly placeholder="0">
-            </div>
-            <?php 
-                }
-            ?>
         </section>
     </main>
 </body>
